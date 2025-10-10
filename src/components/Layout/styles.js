@@ -32,8 +32,9 @@ export const layoutStyles = {
   main: {
     display: "flex",
     flexDirection: "column",
-    gap: 2,
     width: "100%",
+    padding: "0",
+    margin: "initial"
   },
 
   footer: {
