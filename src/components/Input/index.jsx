@@ -1,10 +1,11 @@
 import { TextField } from "@mui/material";
 import { inputStyles } from "./styles";
 
-const Input = ({ label, value, onChange, type = "text", error }) => {
+const Input = ({ label, name, value, onChange, type = "text", error }) => {
   return (
     <TextField
       label={label}
+      name={name}
       value={value}
       onChange={onChange}
       type={type}

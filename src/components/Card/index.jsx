@@ -1,11 +1,11 @@
-import { cardStyles } from "./styles";
 import { Paper, Typography } from "@mui/material";
+import { cardRoot, cardTitle, cardContent } from "./styles";
 
 const Card = ({ title, children }) => {
   return (
-    <Paper style={cardStyles.card} elevation={0}>
-      {title && <Typography style={cardStyles.title}>{title}</Typography>}
-      <Typography style={cardStyles.content}>{children}</Typography>
+    <Paper sx={cardRoot} elevation={0}>
+      {title && <Typography sx={cardTitle}>{title}</Typography>}
+      <Typography sx={cardContent}>{children}</Typography>
     </Paper>
   );
 };

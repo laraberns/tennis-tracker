@@ -1,8 +1,6 @@
-export const spinnerStyles = {
-  container: {
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    p: 2,
-  },
+export const spinnerContainer = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  p: 2,
 };

@@ -1,14 +1,22 @@
 import { Button as MUIButton } from "@mui/material";
-import { buttonStyles } from "./styles";
+import {
+  buttonRoot,
+  buttonPrimary,
+  buttonSecondary,
+  buttonDanger,
+} from "./styles";
 
-const Button = ({ children, onClick, ...props }) => {
+const Button = ({ children, onClick, color = "primary", ...props }) => {
+  const colorStyles = {
+    primary: buttonPrimary,
+    secondary: buttonSecondary,
+    danger: buttonDanger,
+  };
+
+  const style = { ...buttonRoot, ...colorStyles[color] };
+
   return (
-    <MUIButton
-      style={buttonStyles.root}
-      onClick={onClick}
-      {...props}
-      variant="contained"
-    >
+    <MUIButton sx={style} onClick={onClick} {...props} variant="contained">
       {children}
     </MUIButton>
   );

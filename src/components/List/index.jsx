@@ -1,11 +1,11 @@
 import { Box, Typography } from "@mui/material";
-import { listStyles } from "./styles";
+import { listContainer, listItem } from "./styles";
 
 const List = ({ items, renderItem }) => {
   return (
-    <Box sx={listStyles.container}>
+    <Box sx={listContainer}>
       {items.map((item, index) => (
-        <Box key={index} sx={listStyles.item}>
+        <Box key={index} sx={listItem}>
           {renderItem ? renderItem(item) : <Typography>{item}</Typography>}
         </Box>
       ))}

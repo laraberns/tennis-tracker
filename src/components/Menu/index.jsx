@@ -1,6 +1,11 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { styles, breakpoints } from "./styles";
+import {
+  navStyles,
+  menuItemStyles,
+  activeItemStyles,
+  breakpoints,
+} from "./styles";
 
 const Menu = () => {
   const location = useLocation();
@@ -21,20 +26,23 @@ const Menu = () => {
   ];
 
   return (
-    <nav style={styles.nav(isMobile)}>
-      {menuItems.map((item) => (
-        <Link
-          key={item.path}
-          to={item.path}
-          style={
-            location.pathname === item.path
-              ? { ...styles.menuItem(isMobile), ...styles.activeItem }
-              : styles.menuItem(isMobile)
-          }
-        >
-          {item.label}
-        </Link>
-      ))}
+    <nav style={navStyles(isMobile)}>
+      {menuItems.map((item) => {
+        const isActive = location.pathname === item.path;
+        return (
+          <Link
+            key={item.path}
+            to={item.path}
+            style={
+              isActive
+                ? { ...menuItemStyles(isMobile), ...activeItemStyles }
+                : menuItemStyles(isMobile)
+            }
+          >
+            {item.label}
+          </Link>
+        );
+      })}
     </nav>
   );
 };

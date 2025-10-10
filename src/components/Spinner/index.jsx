@@ -1,9 +1,9 @@
 import { CircularProgress, Box } from "@mui/material";
-import { spinnerStyles } from "./styles";
+import { spinnerContainer } from "./styles";
 
 const Spinner = ({ size = 40 }) => {
   return (
-    <Box sx={spinnerStyles.container}>
+    <Box sx={spinnerContainer}>
       <CircularProgress size={size} />
     </Box>
   );

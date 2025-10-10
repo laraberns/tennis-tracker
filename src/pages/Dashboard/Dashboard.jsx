@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { Box, Typography, Grid } from "@mui/material";
 import Layout from "../../components/Layout";
 import Card from "../../components/Card";
-import Alert from "../../components/Alert";
+import Menu from "../../components/Menu";
 import {
   dashboardContainer,
   welcomeText,
@@ -17,46 +18,51 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import Menu from "../../components/Menu";
 
 const Dashboard = ({ playerName = "Maria Luísa" }) => {
-  const [alertMessage, setAlertMessage] = useState(null);
   const [trainingData, setTrainingData] = useState([
     { date: "2025-10-01", aces: 5, errors: 3, duration: 60 },
     { date: "2025-10-03", aces: 7, errors: 2, duration: 45 },
     { date: "2025-10-05", aces: 4, errors: 5, duration: 50 },
   ]);
 
+
   return (
     <Layout>
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <Box sx={{ display: "flex", flexDirection: "row" }}>
         <Menu />
-        <div style={{ flex: 1, padding: "1rem" }}>
-          <div style={dashboardContainer}>
-            {alertMessage && (
-              <Alert type={alertMessage.type}>{alertMessage.text}</Alert>
-            )}
+        <Box sx={{ flex: 1, p: 2 }}>
+          <Box sx={dashboardContainer}>
+            <Typography variant="h5" sx={welcomeText}>
+              Olá, {playerName} 👋
+            </Typography>
 
-            <h2 style={welcomeText}>Olá, {playerName} 👋</h2>
+            <Grid container spacing={2} sx={cardsContainer}>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card title="Total de Treinos">{trainingData.length}</Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card title="Duração Média">
+                  {Math.round(
+                    trainingData.reduce((acc, t) => acc + t.duration, 0) /
+                      trainingData.length
+                  )}{" "}
+                  min
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card title="Aces Totais">
+                  {trainingData.reduce((acc, t) => acc + t.aces, 0)}
+                </Card>
+              </Grid>
+              <Grid item xs={12} sm={6} md={3}>
+                <Card title="Erros Totais">
+                  {trainingData.reduce((acc, t) => acc + t.errors, 0)}
+                </Card>
+              </Grid>
+            </Grid>
 
-            <div style={cardsContainer}>
-              <Card title="Total de Treinos">{trainingData.length}</Card>
-              <Card title="Duração Média">
-                {Math.round(
-                  trainingData.reduce((acc, t) => acc + t.duration, 0) /
-                    trainingData.length
-                )}{" "}
-                min
-              </Card>
-              <Card title="Aces Totais">
-                {trainingData.reduce((acc, t) => acc + t.aces, 0)}
-              </Card>
-              <Card title="Erros Totais">
-                {trainingData.reduce((acc, t) => acc + t.errors, 0)}
-              </Card>
-            </div>
-
-            <div style={chartContainer}>
+            <Box sx={chartContainer} mt={4}>
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={trainingData}>
                   <XAxis dataKey="date" />
@@ -67,10 +73,10 @@ const Dashboard = ({ playerName = "Maria Luísa" }) => {
                   <Line type="monotone" dataKey="errors" stroke="#B084CC" />
                 </LineChart>
               </ResponsiveContainer>
-            </div>
-          </div>
-        </div>
-      </div>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
     </Layout>
   );
 };

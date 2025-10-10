@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { Box, AppBar, Toolbar } from "@mui/material";
-import { layoutStyles } from "./styles";
+import {
+  layoutRoot,
+  layoutAppBar,
+  layoutToolbar,
+  layoutLogo,
+  layoutMain,
+  layoutFooter,
+} from "./styles";
 import logoImg from "../../assets/logo.png";
 
 const Layout = ({ children }) => {
@@ -19,23 +26,23 @@ const Layout = ({ children }) => {
   }, []);
 
   return (
-    <Box sx={layoutStyles.root}>
-      <AppBar position="static" sx={layoutStyles.appBar}>
-        <Toolbar sx={layoutStyles.toolbar}>
+    <Box sx={layoutRoot}>
+      <AppBar position="static" sx={layoutAppBar}>
+        <Toolbar sx={layoutToolbar}>
           <Box
             component="img"
             src={logoImg}
             alt="Tennis Tracker Logo"
-            sx={layoutStyles.logo(logoSize)}
+            sx={layoutLogo(logoSize)}
           />
         </Toolbar>
       </AppBar>
 
-      <Box component="main" sx={layoutStyles.main}>
+      <Box component="main" sx={layoutMain}>
         {children}
       </Box>
 
-      <Box component="footer" sx={layoutStyles.footer}>
+      <Box component="footer" sx={layoutFooter}>
         &copy; {new Date().getFullYear()} Tennis Tracker. Todos os direitos
         reservados.
       </Box>

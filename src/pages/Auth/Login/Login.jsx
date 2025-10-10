@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Box, Typography, Link, Stack } from "@mui/material";
 import Layout from "../../../components/Layout";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
-import Alert from "../../../components/Alert";
+import { showSuccess, showError } from "../../../components/Alert"; 
 import logoImg from "../../../assets/logo.png";
+
 import {
   authContainer,
   authCard,
@@ -20,8 +22,6 @@ const Login = () => {
     password: "",
   });
 
-  const [alertMessage, setAlertMessage] = useState(null);
-
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -33,55 +33,63 @@ const Login = () => {
     e.preventDefault();
 
     if (!formData.email || !formData.password) {
-      setAlertMessage({ type: "error", text: "Preencha todos os campos." });
+      showError("Preencha todos os campos.");
       return;
     }
 
-    setAlertMessage({ type: "success", text: "Login realizado com sucesso!" });
+    showSuccess("Login realizado com sucesso!");
     console.log("Login:", formData);
   };
 
   return (
     <Layout>
-      <div style={authContainer}>
-        {alertMessage && (
-          <Alert type={alertMessage.type}>{alertMessage.text}</Alert>
-        )}
-
-        <div style={authCard}>
-          <div style={logoWrapper}>
-            <img src={logoImg} alt="Tennis Tracker" style={logoStyle} />
-          </div>
-
-          <h2 style={title}>Entrar</h2>
-
-          <form onSubmit={handleSubmit} style={formStyle}>
-            <Input
-              label="E-mail"
-              name="email"
-              type="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
+      <Box sx={authContainer}>
+        <Box sx={authCard}>
+          <Box sx={logoWrapper}>
+            <Box
+              component="img"
+              src={logoImg}
+              alt="Tennis Tracker"
+              sx={logoStyle}
             />
+          </Box>
 
-            <Input
-              label="Senha"
-              name="password"
-              type="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+          <Typography variant="h5" sx={title}>
+            Entrar
+          </Typography>
 
-            <Button type="submit">Entrar</Button>
-          </form>
+          <Box component="form" onSubmit={handleSubmit} sx={formStyle}>
+            <Stack spacing={2}>
+              <Input
+                label="E-mail"
+                name="email"
+                type="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
 
-          <p style={linkText}>
-            Ainda não tem conta? <a href="/cadastro">Cadastrar</a>
-          </p>
-        </div>
-      </div>
+              <Input
+                label="Senha"
+                name="password"
+                type="password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+              />
+
+              <Button type="submit">Entrar</Button>
+            </Stack>
+          </Box>
+
+          <Typography sx={linkText}>
+            Ainda não tem conta?{" "}
+            <Link href="/cadastro" underline="hover">
+              Cadastrar
+            </Link>
+          </Typography>
+        </Box>
+      </Box>
     </Layout>
   );
 };

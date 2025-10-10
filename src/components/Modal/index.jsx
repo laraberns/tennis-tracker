@@ -1,12 +1,12 @@
-import { Modal as MUIModal, Box, Typography } from "@mui/material";
-import { modalStyles } from "./styles";
+import { MUIModal, Box, Typography } from "@mui/material";
+import { modalContainer, modalTitle, modalContent } from "./styles";
 
 const Modal = ({ isOpen, onClose, title, children }) => {
   return (
     <MUIModal open={isOpen} onClose={onClose}>
-      <Box sx={modalStyles.container}>
-        {title && <Typography sx={modalStyles.title}>{title}</Typography>}
-        <Box sx={modalStyles.content}>{children}</Box>
+      <Box sx={modalContainer}>
+        {title && <Typography sx={modalTitle}>{title}</Typography>}
+        <Box sx={modalContent}>{children}</Box>
       </Box>
     </MUIModal>
   );
