@@ -30,12 +30,10 @@ export const layoutStyles = {
   }),
 
   main: {
-    flex: 1,
-    px: 2,
-    py: 2,
     display: "flex",
     flexDirection: "column",
     gap: 2,
+    width: "100%",
   },
 
   footer: {
