@@ -12,6 +12,7 @@ const Input = ({ label, value, onChange, type = "text", error }) => {
       helperText={error}
       sx={inputStyles.input}
       fullWidth
+      InputLabelProps={type === "date" ? { shrink: true } : undefined}
     />
   );
 };
