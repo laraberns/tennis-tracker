@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Box, Paper, Typography, Link, Stack } from "@mui/material";
-import Layout from "../../../components/Layout"; // <-- mantém o Layout
+import Layout from "../../../components/Layout"; 
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
-import { showSuccess, showError } from "../../../components/Alert"; // <-- toaster
+import { showSuccess, showError } from "../../../components/Alert"; 
 import logoImg from "../../../assets/logo.png";
 
 import {

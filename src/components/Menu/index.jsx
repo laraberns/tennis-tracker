@@ -20,7 +20,7 @@ const Menu = () => {
   const menuItems = [
     { label: "Dashboard", path: "/dashboard" },
     { label: "Registrar Treino", path: "/registro-treino" },
-    { label: "Histórico", path: "/historico" },
+    { label: "Histórico", path: "/historico-treinos" },
     { label: "Dicas & Vídeos", path: "/dicas" },
     { label: "Perfil", path: "/perfil" },
   ];
