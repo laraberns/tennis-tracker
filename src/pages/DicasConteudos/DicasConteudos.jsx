@@ -32,9 +32,11 @@ const DicasConteudos = ({ query = "tennis", maxResults = 6 }) => {
 
     const fetchVideos = async () => {
       setLoading(true);
+
+      const queryForAPI = search.trim() || "tennis";
       try {
         const res = await fetch(
-          `${PEXELS_API}?query=${search}&per_page=${maxResults}&page=${page}`,
+          `${PEXELS_API}?query=${queryForAPI}&per_page=${maxResults}&page=${page}`,
           {
             headers: {
               Authorization: PEXELS_KEY,
@@ -97,41 +99,51 @@ const DicasConteudos = ({ query = "tennis", maxResults = 6 }) => {
             </Stack>
           ) : (
             <>
-              <Grid container spacing={2} sx={videoGridStyle}>
-                {videos.map((v) => (
-                  <Grid item xs={12} sm={6} md={4} key={v.id}>
-                    <Card sx={videoCardStyle}>
-                      <Box sx={videoFrameStyle}>
-                        <Box
-                          component="video"
-                          src={v.videoUrl}
-                          controls
-                          sx={videoElement}
-                        />
-                      </Box>
+              {!loading && videos.length === 0 ? (
+                <Stack alignItems="center" mt={4}>
+                  <Typography>
+                    Nenhum vídeo encontrado para esta pesquisa.
+                  </Typography>
+                </Stack>
+              ) : (
+                <>
+                  <Grid container spacing={2} sx={videoGridStyle}>
+                    {videos.map((v) => (
+                      <Grid item xs={12} sm={6} md={4} key={v.id}>
+                        <Card sx={videoCardStyle}>
+                          <Box sx={videoFrameStyle}>
+                            <Box
+                              component="video"
+                              src={v.videoUrl}
+                              controls
+                              sx={videoElement}
+                            />
+                          </Box>
 
-                      <Box sx={downloadButtonContainer}>
-                        <Button
-                          onClick={() => window.open(v.videoUrl, "_blank")}
-                        >
-                          Download
-                        </Button>
-                      </Box>
-                    </Card>
+                          <Box sx={downloadButtonContainer}>
+                            <Button
+                              onClick={() => window.open(v.videoUrl, "_blank")}
+                            >
+                              Download
+                            </Button>
+                          </Box>
+                        </Card>
+                      </Grid>
+                    ))}
                   </Grid>
-                ))}
-              </Grid>
 
-              {hasMore && !loading && (
-                <Stack alignItems="center" sx={loadMoreContainer}>
-                  <Button onClick={handleLoadMore}>Carregar mais</Button>
-                </Stack>
-              )}
+                  {hasMore && !loading && (
+                    <Stack alignItems="center" sx={loadMoreContainer}>
+                      <Button onClick={handleLoadMore}>Carregar mais</Button>
+                    </Stack>
+                  )}
 
-              {loading && videos.length > 0 && (
-                <Stack alignItems="center" mt={2}>
-                  <CircularProgress size={28} />
-                </Stack>
+                  {loading && videos.length > 0 && (
+                    <Stack alignItems="center" mt={2}>
+                      <CircularProgress size={28} />
+                    </Stack>
+                  )}
+                </>
               )}
             </>
           )}
