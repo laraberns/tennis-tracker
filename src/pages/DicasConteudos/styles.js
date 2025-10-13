@@ -3,7 +3,7 @@ export const containerStyle = {
   flexDirection: "column",
   gap: "1.5rem",
   padding: "2rem",
-  width: "-webkit-fill-available",
+  width: "100%",
 };
 
 export const title = {
@@ -29,14 +29,34 @@ export const videoCardStyle = {
 export const videoFrameStyle = {
   position: "relative",
   height: 180,
-  width: 180 * (16 / 9),
-  borderRadius: 3,
+  width: "100%",
+  aspectRatio: "16 / 9",
+  borderRadius: "0.5rem",
   overflow: "hidden",
   backgroundColor: "#000",
-  mb: 1,
+  marginBottom: "0.5rem",
 };
 
-export const descriptionText = {
-  minHeight: 48,
-  color: "var(--color-text-secondary)",
+export const videoElement = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  width: "100%",
+  height: "100%",
+  border: 0,
+  objectFit: "cover",
+};
+
+export const downloadButtonContainer = {
+  marginTop: "0.5rem",
+  display: "flex",
+  justifyContent: "center",
+};
+
+export const loadingContainer = {
+  marginTop: "2rem",
+};
+
+export const loadMoreContainer = {
+  marginTop: "2rem",
 };

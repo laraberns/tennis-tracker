@@ -11,136 +11,129 @@ import {
   videoGridStyle,
   videoCardStyle,
   videoFrameStyle,
-  descriptionText,
+  videoElement,
+  downloadButtonContainer,
+  loadingContainer,
+  loadMoreContainer,
 } from "./styles";
 
-const YT_API_KEY = "YOUR_YOUTUBE_API_KEY";
-const YT_SEARCH_ENDPOINT = "https://www.googleapis.com/youtube/v3/search";
-
-const FALLBACK_VIDEOS = [
-  {
-    id: "dQw4w9WgXcQ",
-    title: "Tennis Tips — Example 1",
-    description: "Exemplo de vídeo 1 sobre técnica.",
-  },
-  {
-    id: "kXYiU_JCYtU",
-    title: "Tennis Drills — Example 2",
-    description: "Exemplo de vídeo 2 com exercícios práticos.",
-  },
-  {
-    id: "3JZ_D3ELwOQ",
-    title: "Serve Practice — Example 3",
-    description: "Exemplo de treino de saque.",
-  },
-];
+const PEXELS_API = import.meta.env.VITE_API_URL;
+const PEXELS_KEY = import.meta.env.VITE_API_KEY;
 
 const DicasConteudos = ({ query = "tennis", maxResults = 6 }) => {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState(query);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
+    let active = true;
 
-    const fetchYoutube = async () => {
-      if (!YT_API_KEY || YT_API_KEY === "YOUR_YOUTUBE_API_KEY") {
-        if (mounted) {
-          setVideos(FALLBACK_VIDEOS);
-          setLoading(false);
-        }
-        return;
-      }
-
+    const fetchVideos = async () => {
       setLoading(true);
       try {
-        const url = new URL(YT_SEARCH_ENDPOINT);
-        url.searchParams.set("part", "snippet");
-        url.searchParams.set("type", "video");
-        url.searchParams.set("q", query);
-        url.searchParams.set("maxResults", String(maxResults));
-        url.searchParams.set("key", YT_API_KEY);
+        const res = await fetch(
+          `${PEXELS_API}?query=${search}&per_page=${maxResults}&page=${page}`,
+          {
+            headers: {
+              Authorization: PEXELS_KEY,
+            },
+          }
+        );
 
-        const res = await fetch(url.toString());
-        if (!res.ok) throw new Error(`YouTube API error: ${res.status}`);
+        if (!res.ok) throw new Error(`Erro na API: ${res.status}`);
         const data = await res.json();
 
-        const vids = (data.items || []).map((it) => ({
-          id: it.id.videoId,
-          title: it.snippet.title,
-          description: it.snippet.description,
+        const vids = (data.videos || []).map((v) => ({
+          id: v.id,
+          videoUrl: v.video_files?.[0]?.link,
         }));
 
-        if (mounted) setVideos(vids);
+        if (active) {
+          setVideos((prev) => (page === 1 ? vids : [...prev, ...vids]));
+          setHasMore(data.videos?.length === maxResults);
+        }
       } catch (err) {
-        console.error(err);
-        if (mounted) setVideos(FALLBACK_VIDEOS);
+        console.error("Erro ao buscar vídeos:", err);
       } finally {
-        if (mounted) setLoading(false);
+        if (active) setLoading(false);
       }
     };
 
-    fetchYoutube();
+    fetchVideos();
     return () => {
-      mounted = false;
+      active = false;
     };
-  }, [query, maxResults]);
+  }, [search, page, maxResults]);
 
-return (
+  const handleLoadMore = () => setPage((prev) => prev + 1);
+  const handleSearch = (e) => {
+    setSearch(e.target.value);
+    setPage(1);
+  };
+
+  return (
     <Layout>
       <Box sx={{ display: "flex" }}>
         <Menu />
         <Box sx={containerStyle}>
-          <Typography variant="h5" sx={title}>Vídeos de Dicas</Typography>
+          <Typography variant="h5" sx={title}>
+            Vídeos de Dicas e Treinos
+          </Typography>
 
           <Box sx={{ mb: 3, maxWidth: 360 }}>
-            <Input label="Pesquisar (ex: forehand)" value={query} onChange={() => {}} />
+            <Input
+              label="Pesquisar (ex: forehand, saque, treino)"
+              value={search}
+              onChange={handleSearch}
+            />
           </Box>
 
-          {loading ? (
-            <Stack alignItems="center" mt={4}>
+          {loading && videos.length === 0 ? (
+            <Stack alignItems="center" sx={loadingContainer}>
               <CircularProgress />
               <Typography mt={2}>Carregando vídeos...</Typography>
             </Stack>
           ) : (
-            <Grid container spacing={2} sx={videoGridStyle}>
-              {videos.map((v) => (
-                <Grid item xs={12} sm={6} md={4} key={v.id}>
-                  <Card sx={videoCardStyle}>
-                    <Box sx={videoFrameStyle}>
-                      <Box
-                        component="iframe"
-                        src={`https://www.youtube.com/embed/${v.id}`}
-                        title={v.title}
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowFullScreen
-                        sx={{
-                          position: "absolute",
-                          top: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "100%",
-                          border: 0,
-                        }}
-                      />
-                    </Box>
+            <>
+              <Grid container spacing={2} sx={videoGridStyle}>
+                {videos.map((v) => (
+                  <Grid item xs={12} sm={6} md={4} key={v.id}>
+                    <Card sx={videoCardStyle}>
+                      <Box sx={videoFrameStyle}>
+                        <Box
+                          component="video"
+                          src={v.videoUrl}
+                          controls
+                          sx={videoElement}
+                        />
+                      </Box>
 
-                    <Typography variant="h6" sx={{ mb: 0.5, fontWeight: "bold" }}>
-                      {v.title}
-                    </Typography>
+                      <Box sx={downloadButtonContainer}>
+                        <Button
+                          onClick={() => window.open(v.videoUrl, "_blank")}
+                        >
+                          Download
+                        </Button>
+                      </Box>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
 
-                    <Typography variant="body2" sx={descriptionText}>
-                      {v.description ? (v.description.length > 100 ? v.description.slice(0, 100) + "…" : v.description) : "—"}
-                    </Typography>
+              {hasMore && !loading && (
+                <Stack alignItems="center" sx={loadMoreContainer}>
+                  <Button onClick={handleLoadMore}>Carregar mais</Button>
+                </Stack>
+              )}
 
-                    <Box sx={{ mt: 1 }}>
-                      <Button onClick={() => window.open(`https://youtu.be/${v.id}`, "_blank")}>
-                        Assistir no YouTube
-                      </Button>
-                    </Box>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
+              {loading && videos.length > 0 && (
+                <Stack alignItems="center" mt={2}>
+                  <CircularProgress size={28} />
+                </Stack>
+              )}
+            </>
           )}
         </Box>
       </Box>
