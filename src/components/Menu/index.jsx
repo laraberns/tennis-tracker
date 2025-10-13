@@ -21,7 +21,7 @@ const Menu = () => {
     { label: "Dashboard", path: "/dashboard" },
     { label: "Registrar Treino", path: "/registro-treino" },
     { label: "Histórico", path: "/historico-treinos" },
-    { label: "Dicas & Vídeos", path: "/dicas" },
+    { label: "Dicas & Vídeos", path: "/dicas-conteudos" },
     { label: "Perfil", path: "/perfil" },
   ];
 

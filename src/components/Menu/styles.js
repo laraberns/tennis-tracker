@@ -10,7 +10,7 @@ export const navStyles = (isMobile) => ({
   backgroundColor: "#190933",
   color: "#fff",
   width: isMobile ? "100%" : "200px",
-  height: isMobile ? "60px" : "100vh",
+  minHeight: isMobile ? "60px" : "100vh",
   padding: isMobile ? 0 : "1rem",
   position: isMobile ? "fixed" : "relative",
   bottom: isMobile ? 0 : "auto",
