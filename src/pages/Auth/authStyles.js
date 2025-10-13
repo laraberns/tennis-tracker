@@ -42,7 +42,6 @@ export const title = {
   fontSize: "1.8rem",
   fontWeight: "700",
   color: "var(--color-text-primary)",
-  marginBottom: "1.8rem",
   fontFamily: "var(--font-heading)",
 };
 

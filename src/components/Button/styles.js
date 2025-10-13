@@ -15,7 +15,8 @@ export const buttonPrimary = {
   backgroundColor: "var(--color-primary)",
   color: "white",
   "&:hover": {
-    backgroundColor: "var(--color-primary-dark)",
+    backgroundColor: "var(--color-primary)",
+    transform: "translateY(-2px)",
   },
 };
 
@@ -23,7 +24,8 @@ export const buttonSecondary = {
   backgroundColor: "var(--color-secondary)",
   color: "white",
   "&:hover": {
-    backgroundColor: "var(--color-secondary-dark)",
+    backgroundColor: "var(--color-secondary)",
+    transform: "translateY(-2px)",
   },
 };
 
@@ -31,6 +33,7 @@ export const buttonDanger = {
   backgroundColor: "var(--color-error)",
   color: "white",
   "&:hover": {
-    backgroundColor: "var(--color-error-dark)",
+    backgroundColor: "var(--color-error)",
+    transform: "translateY(-2px)",
   },
 };

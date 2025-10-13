@@ -26,6 +26,5 @@ export const actionStackStyle = {
 export const title = {
   fontSize: "1.8rem",
   fontWeight: "700",
-  marginBottom: "1rem",
   color: "var(--color-text-primary)",
 };

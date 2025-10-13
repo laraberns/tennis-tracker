@@ -1,6 +1,7 @@
 export const container = {
   display: "flex",
   flexDirection: "column",
+  alignItems: "center",
   gap: "1.5rem",
   padding: "2rem",
   width: "-webkit-fill-available",
@@ -9,7 +10,6 @@ export const container = {
 export const title = {
   fontSize: "1.8rem",
   fontWeight: "700",
-  marginBottom: "1rem",
   color: "var(--color-text-primary)",
 };
 
@@ -21,4 +21,6 @@ export const formWrapper = {
   display: "flex",
   flexDirection: "column",
   gap: "1rem",
+  maxWidth: 600,
+  width: "100%",
 };

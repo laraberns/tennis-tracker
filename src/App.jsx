@@ -6,6 +6,7 @@ import RegistroTreino from "./pages/RegistroTreino/RegistroTreino";
 import Alert from "./components/Alert";
 import HistoricoTreinos from "./pages/HistoricoTreinos/HistoricoTreinos";
 import DicasConteudos from "./pages/DicasConteudos/DicasConteudos";
+import Perfil from "./pages/Perfil/Perfil";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
         <Route path="/registro-treino" element={<RegistroTreino />} />
         <Route path="/historico-treinos" element={<HistoricoTreinos />} />
         <Route path="/dicas-conteudos" element={<DicasConteudos />} />
+        <Route path="/perfil" element={<Perfil />} />
       </Routes>
     </Router>
   );

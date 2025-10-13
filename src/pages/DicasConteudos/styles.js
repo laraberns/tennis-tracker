@@ -7,9 +7,8 @@ export const containerStyle = {
 };
 
 export const title = {
-  fontSize: "1.6rem",
-  fontWeight: 700,
-  marginBottom: "1rem",
+  fontSize: "1.8rem",
+  fontWeight: "700",
   color: "var(--color-text-primary)",
 };
 
