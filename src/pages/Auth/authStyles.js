@@ -43,6 +43,7 @@ export const title = {
   fontWeight: "700",
   color: "var(--color-text-primary)",
   fontFamily: "var(--font-heading)",
+  marginBottom: "1.5rem",
 };
 
 export const formStyle = {

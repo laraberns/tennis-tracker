@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { Box, Typography, Stack, Avatar, Divider, Paper } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import Layout from "../../components/Layout";
 import Menu from "../../components/Menu";
 import Input from "../../components/Input";
@@ -11,12 +13,15 @@ import {
   buttonGroup,
   avatarBox,
 } from "./styles";
-import { showSuccess } from "../../components/Alert";
+import { showSuccess, showError } from "../../components/Alert";
 
 const Perfil = () => {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+  
   const [perfil, setPerfil] = useState({
-    nome: "Lara Berns",
-    email: "lara@exemplo.com",
+    nome: user?.displayName || "Lara Berns",
+    email: user?.email || "lara@exemplo.com",
     senha: "",
   });
 
@@ -29,8 +34,13 @@ const Perfil = () => {
     showSuccess("Perfil atualizado com sucesso!");
   };
 
-  const handleLogout = () => {
-    showSuccess("Logout realizado!");
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      showError("Erro ao fazer logout. Tente novamente.");
+    }
   };
 
   return (
@@ -97,6 +107,7 @@ const Perfil = () => {
                 type="password"
                 value={perfil.senha}
                 onChange={handleChange}
+                placeholder="Digite nova senha para alterar"
               />
 
               <Stack direction="row" spacing={2} sx={buttonGroup}>

@@ -42,6 +42,10 @@ const Layout = ({ children }) => {
     };
   }, []);
 
+  const isAuthRoute = () => {
+    return location.pathname === "/login" || location.pathname === "/cadastro";
+  };
+
   const getRouteNavigation = () => {
     const routes = [
       "/dashboard",
@@ -61,7 +65,7 @@ const Layout = ({ children }) => {
 
   const swipeHandlers = useSwipeGesture({
     onSwipeLeft: () => {
-      if (isMobile) {
+      if (isMobile && !isAuthRoute()) {
         const { next } = getRouteNavigation();
         if (next) {
           navigate(next);
@@ -69,7 +73,7 @@ const Layout = ({ children }) => {
       }
     },
     onSwipeRight: () => {
-      if (isMobile) {
+      if (isMobile && !isAuthRoute()) {
         const { prev } = getRouteNavigation();
         if (prev) {
           navigate(prev);
@@ -77,12 +81,12 @@ const Layout = ({ children }) => {
       }
     },
     onSwipeUp: () => {
-      if (isMobile) {
+      if (isMobile && !isAuthRoute()) {
         window.scrollTo({ top: 0, behavior: "smooth" });
       }
     },
     onSwipeDown: () => {
-      if (isMobile) {
+      if (isMobile && !isAuthRoute()) {
         window.scrollTo({
           top: document.body.scrollHeight,
           behavior: "smooth",
@@ -92,8 +96,10 @@ const Layout = ({ children }) => {
     threshold: 50,
   });
 
+  const shouldApplyGestures = isMobile && !isAuthRoute();
+
   return (
-    <Box sx={layoutRoot} {...(isMobile ? swipeHandlers : {})}>
+    <Box sx={layoutRoot} {...(shouldApplyGestures ? swipeHandlers : {})}>
       <AppBar position="static" sx={layoutAppBar}>
         <Toolbar sx={layoutToolbar}>
           <Box
@@ -109,7 +115,7 @@ const Layout = ({ children }) => {
         {children}
       </Box>
 
-      {isMobile && showSwipeHint && (
+      {shouldApplyGestures && showSwipeHint && (
         <Box sx={swipeIndicator}>👆 Deslize para os lados para navegar</Box>
       )}
 
