@@ -233,3 +233,37 @@ textarea:focus {
     max-width: 960px;
   }
 }
+/* ============================
+   ✨ ANIMAÇÕES E INTERAÇÕES
+   ============================ */
+@keyframes fadeInOut {
+  0% { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(20px);
+  }
+  20% { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0);
+  }
+  80% { 
+    opacity: 1; 
+    transform: translateX(-50%) translateY(0);
+  }
+  100% { 
+    opacity: 0; 
+    transform: translateX(-50%) translateY(-20px);
+  }
+}
+
+@media (max-width: 768px) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  
+  body {
+    touch-action: pan-y;
+  }
+}
