@@ -1,4 +1,3 @@
-// context/AuthContext.jsx
 import { createContext, useContext, useState, useEffect } from 'react';
 import { 
   createUserWithEmailAndPassword,
@@ -72,16 +71,22 @@ export const AuthProvider = ({ children }) => {
           errorMessage = 'E-mail inválido.';
           break;
         case 'auth/user-not-found':
-          errorMessage = 'Usuário não encontrado.';
+          errorMessage = 'Usuário não encontrado. Verifique seu e-mail.';
           break;
         case 'auth/wrong-password':
-          errorMessage = 'Senha incorreta.';
+          errorMessage = 'Senha incorreta. Tente novamente.';
+          break;
+        case 'auth/invalid-credential':
+          errorMessage = 'Credenciais inválidas. Verifique seu e-mail e senha.';
           break;
         case 'auth/too-many-requests':
-          errorMessage = 'Muitas tentativas. Tente novamente mais tarde.';
+          errorMessage = 'Muitas tentativas de login. Tente novamente mais tarde.';
+          break;
+        case 'auth/user-disabled':
+          errorMessage = 'Esta conta foi desativada.';
           break;
         default:
-          errorMessage = error.message;
+          errorMessage = 'Erro ao fazer login. Tente novamente.';
       }
       
       showError(errorMessage);

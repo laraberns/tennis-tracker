@@ -1,9 +1,12 @@
 import { useState } from "react";
-import { Box, Typography, Link, Stack } from "@mui/material";
+import { Box, Typography, Link, Stack, IconButton, InputAdornment } from "@mui/material";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { useNavigate, useLocation } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 import Layout from "../../../components/Layout";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
-import { showSuccess, showError } from "../../../components/Alert"; 
+import { showError } from "../../../components/Alert"; 
 import logoImg from "../../../assets/logo.png";
 
 import {
@@ -21,6 +24,14 @@ const Login = () => {
     email: "",
     password: "",
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+  
+  const from = location.state?.from?.pathname || "/dashboard";
 
   const handleChange = (e) => {
     setFormData({
@@ -29,16 +40,31 @@ const Login = () => {
     });
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  const handleClickShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
 
+  const handleMouseDownPassword = (e) => {
+    e.preventDefault();
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
     if (!formData.email || !formData.password) {
       showError("Preencha todos os campos.");
       return;
     }
 
-    showSuccess("Login realizado com sucesso!");
-    console.log("Login:", formData);
+    setLoading(true);
+    
+    try {
+      await login(formData.email, formData.password);
+      navigate(from, { replace: true });
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -67,18 +93,37 @@ const Login = () => {
                 value={formData.email}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
 
               <Input
                 label="Senha"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={loading}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        onClick={handleClickShowPassword}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                        disabled={loading}
+                      >
+                        {showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
               />
 
-              <Button type="submit">Entrar</Button>
+              <Button type="submit" disabled={loading}>
+                {loading ? "Entrando..." : "Entrar"}
+              </Button>
             </Stack>
           </Box>
 
