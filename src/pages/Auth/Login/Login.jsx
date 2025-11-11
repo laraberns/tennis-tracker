@@ -1,12 +1,19 @@
 import { useState } from "react";
-import { Box, Typography, Link, Stack, IconButton, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Link,
+  Stack,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import Layout from "../../../components/Layout";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
-import { showError } from "../../../components/Alert"; 
+import { showError } from "../../../components/Alert";
 import logoImg from "../../../assets/logo.png";
 
 import {
@@ -26,11 +33,11 @@ const Login = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  
+
   const from = location.state?.from?.pathname || "/dashboard";
 
   const handleChange = (e) => {
@@ -50,14 +57,14 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!formData.email || !formData.password) {
       showError("Preencha todos os campos.");
       return;
     }
 
     setLoading(true);
-    
+
     try {
       await login(formData.email, formData.password);
       navigate(from, { replace: true });
@@ -108,7 +115,9 @@ const Login = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        aria-label={
+                          showPassword ? "Ocultar senha" : "Mostrar senha"
+                        }
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
@@ -131,6 +140,11 @@ const Login = () => {
             Ainda não tem conta?{" "}
             <Link href="/cadastro" underline="hover">
               Cadastrar
+            </Link>
+          </Typography>
+          <Typography sx={{ ...linkText, mt: 1 }}>
+            <Link href="/esqueci-senha" underline="hover">
+              Esqueci minha senha
             </Link>
           </Typography>
         </Box>

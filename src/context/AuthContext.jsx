@@ -3,7 +3,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   signOut,
-  onAuthStateChanged
+  onAuthStateChanged,
+  sendPasswordResetEmail,
+  updatePassword
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { showSuccess, showError } from '../components/Alert';
@@ -104,11 +106,66 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const resetPassword = async (email) => {
+    try {
+      await sendPasswordResetEmail(auth, email);
+      showSuccess('E-mail de recuperação enviado! Verifique sua caixa de entrada.');
+    } catch (error) {
+      let errorMessage = 'Erro ao enviar e-mail de recuperação.';
+      
+      switch (error.code) {
+        case 'auth/user-not-found':
+          errorMessage = 'E-mail não cadastrado no sistema.';
+          break;
+        case 'auth/invalid-email':
+          errorMessage = 'E-mail inválido.';
+          break;
+        case 'auth/too-many-requests':
+          errorMessage = 'Muitas tentativas. Tente novamente mais tarde.';
+          break;
+        default:
+          errorMessage = 'Erro ao enviar e-mail de recuperação. Tente novamente.';
+      }
+      
+      showError(errorMessage);
+      throw error;
+    }
+  };
+
+  const changePassword = async (newPassword) => {
+    try {
+      if (!user) {
+        throw new Error('Usuário não autenticado.');
+      }
+      
+      await updatePassword(user, newPassword);
+      showSuccess('Senha alterada com sucesso!');
+    } catch (error) {
+      let errorMessage = 'Erro ao alterar senha.';
+      
+      switch (error.code) {
+        case 'auth/weak-password':
+          errorMessage = 'Senha muito fraca. Use pelo menos 6 caracteres.';
+          break;
+        case 'auth/requires-recent-login':
+          errorMessage = 'Por segurança, faça login novamente antes de alterar a senha.';
+          break;
+        default:
+          errorMessage = 'Erro ao alterar senha. Tente novamente.';
+      }
+      
+      showError(errorMessage);
+      throw error;
+    }
+  };
+
   const value = {
     user,
     signUp,
     login,
     logout,
+    resetPassword,
+    changePassword,
     loading
   };
 

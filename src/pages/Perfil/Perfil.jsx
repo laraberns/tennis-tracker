@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Box, Typography, Stack, Avatar, Divider, Paper } from "@mui/material";
+import { Box, Typography, Stack, Avatar, Divider, Paper, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Layout from "../../components/Layout";
@@ -16,14 +16,22 @@ import {
 import { showSuccess, showError } from "../../components/Alert";
 
 const Perfil = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, changePassword } = useAuth();
   const navigate = useNavigate();
   
   const [perfil, setPerfil] = useState({
-    nome: user?.displayName || "Lara Berns",
-    email: user?.email || "lara@exemplo.com",
+    nome: user?.displayName || user?.email?.split('@')[0] || "Usuário",
+    email: user?.email || "",
     senha: "",
   });
+
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [changingPassword, setChangingPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,6 +48,33 @@ const Perfil = () => {
       navigate("/login");
     } catch (error) {
       showError("Erro ao fazer logout. Tente novamente.");
+    }
+  };
+
+  const handleChangePassword = async () => {
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      showError("As novas senhas não coincidem!");
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      showError("A nova senha deve ter pelo menos 6 caracteres.");
+      return;
+    }
+
+    setChangingPassword(true);
+
+    try {
+      await changePassword(passwordData.newPassword);
+      setChangePasswordOpen(false);
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (error) {
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -71,7 +106,7 @@ const Perfil = () => {
                     boxShadow: 3,
                   }}
                 >
-                  {perfil.nome.charAt(0)}
+                  {perfil.nome.charAt(0).toUpperCase()}
                 </Avatar>
                 <Typography
                   variant="h6"
@@ -99,16 +134,16 @@ const Perfil = () => {
                 type="email"
                 value={perfil.email}
                 onChange={handleChange}
+                disabled
               />
 
-              <Input
-                label="Nova Senha"
-                name="senha"
-                type="password"
-                value={perfil.senha}
-                onChange={handleChange}
-                placeholder="Digite nova senha para alterar"
-              />
+              <Button 
+                color="primary" 
+                onClick={() => setChangePasswordOpen(true)}
+                fullWidth
+              >
+                🔒 Alterar Senha
+              </Button>
 
               <Stack direction="row" spacing={2} sx={buttonGroup}>
                 <Button color="primary" onClick={handleSave} fullWidth>
@@ -120,6 +155,41 @@ const Perfil = () => {
               </Stack>
             </Stack>
           </Paper>
+
+          <Dialog open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} maxWidth="sm" fullWidth>
+            <DialogTitle>Alterar Senha</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <Input
+                  label="Nova Senha"
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  disabled={changingPassword}
+                  helperText="Mínimo 6 caracteres"
+                />
+                <Input
+                  label="Confirmar Nova Senha"
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  disabled={changingPassword}
+                />
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setChangePasswordOpen(false)} disabled={changingPassword}>
+                Cancelar
+              </Button>
+              <Button 
+                onClick={handleChangePassword} 
+                disabled={changingPassword}
+                color="primary"
+              >
+                {changingPassword ? "Alterando..." : "Alterar Senha"}
+              </Button>
+            </DialogActions>
+          </Dialog>
         </Box>
       </Box>
     </Layout>
