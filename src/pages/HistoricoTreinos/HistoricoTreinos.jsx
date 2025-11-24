@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, Grid, IconButton, Stack } from "@mui/material";
 import Layout from "../../components/Layout";
 import Card from "../../components/Card";
 import Menu from "../../components/Menu";
-import { showSuccess } from "../../components/Alert";
+import { useTraining } from "../../context/TrainingContext";
 import { format } from "date-fns";
 import { Edit, Delete } from "@mui/icons-material";
 import CustomModalAddActivity from "../../components/Modal/CustomModalAddActivity";
@@ -15,15 +15,11 @@ import {
   cardStackStyle,
   actionStackStyle,
   title,
+  emptyState,
 } from "./styles";
 
 const HistoricoTreinos = () => {
-  const [trainingData, setTrainingData] = useState([
-    { id: 1, date: "2025-10-01", duration: 60, aces: 5, errors: 3, notes: "Treino leve" },
-    { id: 2, date: "2025-10-03", duration: 45, aces: 7, errors: 2, notes: "Foco em saque" },
-    { id: 3, date: "2025-10-05", duration: 50, aces: 4, errors: 5, notes: "Treino intenso" },
-  ]);
-
+  const { trainings, loading, updateTraining, deleteTraining, refreshTrainings } = useTraining();
   const [searchDate, setSearchDate] = useState("");
   const [editing, setEditing] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -31,21 +27,32 @@ const HistoricoTreinos = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
   const filteredData = searchDate
-    ? trainingData.filter((t) => t.date === searchDate)
-    : trainingData;
+    ? trainings.filter((t) => t.date === searchDate)
+    : trainings;
+
+  useEffect(() => {
+    refreshTrainings();
+  }, []);
 
   const handleEdit = (treino) => {
     setEditing(treino);
     setIsModalOpen(true);
   };
 
-  const handleSave = (updatedTreino) => {
-    setTrainingData(
-      trainingData.map((t) => (t.id === updatedTreino.id ? updatedTreino : t))
-    );
-    showSuccess("Treino atualizado com sucesso!");
-    setIsModalOpen(false);
-    setEditing(null);
+  const handleSave = async (updatedTreino) => {
+    try {
+      await updateTraining(updatedTreino.id, {
+        date: updatedTreino.date,
+        duration: updatedTreino.duration,
+        aces: updatedTreino.aces,
+        errors: updatedTreino.errors,
+        doubleFaults: updatedTreino.doubleFaults || 0,
+        notes: updatedTreino.notes || ""
+      });
+      setIsModalOpen(false);
+      setEditing(null);
+    } catch (error) {
+    }
   };
 
   const handleDelete = (id) => {
@@ -53,12 +60,30 @@ const HistoricoTreinos = () => {
     setIsDeleteModalOpen(true);
   };
 
-  const confirmDelete = () => {
-    setTrainingData(trainingData.filter((t) => t.id !== deleteId));
-    showSuccess("Treino excluído com sucesso!");
-    setDeleteId(null);
-    setIsDeleteModalOpen(false);
+  const confirmDelete = async () => {
+    try {
+      await deleteTraining(deleteId);
+      setDeleteId(null);
+      setIsDeleteModalOpen(false);
+    } catch (error) {
+    }
   };
+
+  if (loading && trainings.length === 0) {
+    return (
+      <Layout>
+        <Box sx={{ display: "flex" }}>
+          <Menu />
+          <Box sx={containerStyle}>
+            <Typography variant="h5" sx={title}>
+              Histórico de Treinos
+            </Typography>
+            <Typography>Carregando treinos...</Typography>
+          </Box>
+        </Box>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -75,39 +100,69 @@ const HistoricoTreinos = () => {
               type="date"
               value={searchDate}
               onChange={(e) => setSearchDate(e.target.value)}
+              InputLabelProps={{
+                shrink: true,
+              }}
             />
           </Box>
 
-          <Grid container spacing={2}>
-            {filteredData.map(({ id, date, duration, aces, errors, notes }) => (
-              <Grid item xs={12} sm={6} md={4} key={id}>
-                <Card>
-                  <Stack spacing={1} sx={cardStackStyle}>
-                    {[
-                      ["Data", format(new Date(date), "dd/MM/yyyy")],
-                      ["Duração", `${duration} min`],
-                      ["Aces", aces],
-                      ["Erros", errors],
-                      ["Observações", notes],
-                    ].map(([label, value]) => (
-                      <Typography key={label}>
-                        <strong>{label}:</strong> {value}
-                      </Typography>
-                    ))}
+          {filteredData.length === 0 ? (
+            <Box sx={emptyState}>
+              <Typography variant="h6" color="text.secondary">
+                {searchDate ? "Nenhum treino encontrado para esta data" : "Nenhum treino registrado ainda"}
+              </Typography>
+              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                {searchDate ? "Tente outra data ou " : "Vá para "}
+                <a href="/registro-treino" style={{ color: 'primary.main' }}>
+                  Registrar Treino
+                </a>
+                {!searchDate && " para começar"}
+              </Typography>
+            </Box>
+          ) : (
+            <Grid container spacing={2}>
+              {filteredData.map(({ id, date, duration, aces, errors, doubleFaults, notes }) => (
+                <Grid item xs={12} sm={6} md={4} key={id}>
+                  <Card>
+                    <Stack spacing={1} sx={cardStackStyle}>
+                      {[
+                        ["Data", format(new Date(date), "dd/MM/yyyy")],
+                        ["Duração", `${duration} min`],
+                        ["Aces", aces],
+                        ["Erros", errors],
+                        ["Duplas Faltas", doubleFaults || 0],
+                        ["Observações", notes || "Sem observações"],
+                      ].map(([label, value]) => (
+                        <Typography key={label}>
+                          <strong>{label}:</strong> {value}
+                        </Typography>
+                      ))}
 
-                    <Stack direction="row" spacing={1} sx={actionStackStyle}>
-                      <IconButton color="primary" onClick={() => handleEdit({ id, date, duration, aces, errors, notes })}>
-                        <Edit />
-                      </IconButton>
-                      <IconButton color="error" onClick={() => handleDelete(id)}>
-                        <Delete />
-                      </IconButton>
+                      <Stack direction="row" spacing={1} sx={actionStackStyle}>
+                        <IconButton 
+                          color="primary" 
+                          onClick={() => handleEdit({ 
+                            id, 
+                            date, 
+                            duration, 
+                            aces, 
+                            errors, 
+                            doubleFaults: doubleFaults || 0, 
+                            notes: notes || "" 
+                          })}
+                        >
+                          <Edit />
+                        </IconButton>
+                        <IconButton color="error" onClick={() => handleDelete(id)}>
+                          <Delete />
+                        </IconButton>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          )}
 
           {isModalOpen && editing && (
             <CustomModalAddActivity
@@ -115,6 +170,7 @@ const HistoricoTreinos = () => {
               onClose={() => setIsModalOpen(false)}
               treino={editing}
               onSave={handleSave}
+              isEdit={true}
             />
           )}
 
@@ -133,4 +189,3 @@ const HistoricoTreinos = () => {
 };
 
 export default HistoricoTreinos;
-

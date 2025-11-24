@@ -28,3 +28,16 @@ export const title = {
   fontWeight: "700",
   color: "var(--color-text-primary)",
 };
+
+export const emptyState = {
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: '4rem 2rem',
+  textAlign: 'center',
+  border: '2px dashed',
+  borderColor: 'grey.300',
+  borderRadius: 2,
+  backgroundColor: 'grey.50'
+};
