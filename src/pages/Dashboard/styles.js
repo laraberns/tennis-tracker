@@ -23,3 +23,15 @@ export const chartContainer = {
   padding: "1rem",
   boxShadow: "0 2px 6px rgba(0,0,0,0.1)",
 };
+
+export const loadingContainer = {
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  padding: "2rem",
+  border: "1px dashed",
+  borderColor: "grey.300",
+  borderRadius: 2,
+  backgroundColor: "grey.50",
+  minHeight: "200px",
+};
