@@ -9,7 +9,7 @@ import {
   doc,
   serverTimestamp,
 } from "firebase/firestore";
-import { db } from "../firebase/config"; 
+import { db } from "../firebase/config";
 import { useAuth } from "./AuthContext";
 import { showSuccess, showError } from "../components/Alert";
 
@@ -46,17 +46,20 @@ export const TrainingProvider = ({ children }) => {
 
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        userTrainings.push({
-          id: doc.id,
-          date: data.date,
-          duration: data.duration,
-          aces: data.aces,
-          errors: data.errors,
-          doubleFaults: data.doubleFaults || 0,
-          notes: data.notes || "",
-          createdAt: data.createdAt?.toDate() || new Date(),
-          updatedAt: data.updatedAt?.toDate() || new Date(),
-        });
+
+        if (!data.deleted) {
+          userTrainings.push({
+            id: doc.id,
+            date: data.date,
+            duration: data.duration,
+            aces: data.aces,
+            errors: data.errors,
+            doubleFaults: data.doubleFaults || 0,
+            notes: data.notes || "",
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+          });
+        }
       });
 
       userTrainings.sort((a, b) => new Date(b.date) - new Date(a.date));
@@ -72,7 +75,6 @@ export const TrainingProvider = ({ children }) => {
     }
   };
 
-  // Salva um novo treino
   const saveTraining = async (trainingData) => {
     if (!user) {
       throw new Error("Usuário não autenticado.");
