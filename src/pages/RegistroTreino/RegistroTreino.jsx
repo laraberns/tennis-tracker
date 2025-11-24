@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Box, Typography, Stack } from "@mui/material";
+import { useTraining } from "../../context/TrainingContext"; 
 import Layout from "../../components/Layout";
-import { showSuccess, showError } from "../../components/Alert";
+import { showError } from "../../components/Alert"; 
 import Button from "../../components/Button";
 import Menu from "../../components/Menu";
 import Input from "../../components/Input";
@@ -10,6 +11,7 @@ import { container, title, formWrapper } from "./styles";
 
 const RegistroTreino = () => {
   const navigate = useNavigate();
+  const { saveTraining, loading } = useTraining();
   const [formData, setFormData] = useState({
     date: "",
     duration: "",
@@ -23,18 +25,46 @@ const RegistroTreino = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const { date, duration, aces, errors } = formData;
+    
     if (!date || !duration || !aces || !errors) {
       showError("Preencha todos os campos obrigatórios!");
       return;
     }
 
-    showSuccess("Treino registrado com sucesso!");
+    if (duration <= 0 || aces < 0 || errors < 0) {
+      showError("Valores numéricos devem ser positivos!");
+      return;
+    }
 
-    setTimeout(() => {
-      navigate("/historico");
-    }, 1500);
+    try {
+      const trainingData = {
+        date: date,
+        duration: parseInt(duration),
+        aces: parseInt(aces),
+        errors: parseInt(errors),
+        doubleFaults: formData.doubleFaults ? parseInt(formData.doubleFaults) : 0,
+        notes: formData.notes || ""
+      };
+
+      await saveTraining(trainingData);
+
+      setFormData({
+        date: "",
+        duration: "",
+        aces: "",
+        errors: "",
+        doubleFaults: "",
+        notes: "",
+      });
+
+      setTimeout(() => {
+        navigate("/historico-treinos");
+      }, 1500);
+
+    } catch (error) {
+    }
   };
 
   return (
@@ -49,35 +79,50 @@ const RegistroTreino = () => {
           <Box sx={formWrapper} component="form">
             <Stack spacing={2}>
               <Input
-                label="Data do Treino*"
+                label="Data do Treino"
                 type="date"
                 value={formData.date}
                 onChange={handleChange}
                 name="date"
+                required
+                disabled={loading}
+                InputLabelProps={{
+                  shrink: true,
+                }}
               />
 
               <Input
-                label="Duração (min)*"
+                label="Duração (min)"
                 type="number"
                 value={formData.duration}
                 onChange={handleChange}
                 name="duration"
+                required
+                disabled={loading}
+                inputProps={{ min: 1 }}
+                helperText="Duração mínima: 1 minuto"
               />
 
               <Input
-                label="Número de Aces*"
+                label="Número de Aces"
                 type="number"
                 value={formData.aces}
                 onChange={handleChange}
                 name="aces"
+                required
+                disabled={loading}
+                inputProps={{ min: 0 }}
               />
 
               <Input
-                label="Erros Não Forçados*"
+                label="Erros Não Forçados"
                 type="number"
                 value={formData.errors}
                 onChange={handleChange}
                 name="errors"
+                required
+                disabled={loading}
+                inputProps={{ min: 0 }}
               />
 
               <Input
@@ -86,6 +131,9 @@ const RegistroTreino = () => {
                 value={formData.doubleFaults}
                 onChange={handleChange}
                 name="doubleFaults"
+                disabled={loading}
+                inputProps={{ min: 0 }}
+                helperText="Opcional"
               />
 
               <Input
@@ -94,9 +142,18 @@ const RegistroTreino = () => {
                 value={formData.notes}
                 onChange={handleChange}
                 name="notes"
+                disabled={loading}
+                multiline
+                rows={3}
+                helperText="Observações sobre o treino (opcional)"
               />
 
-              <Button onClick={handleSubmit}>Salvar Treino</Button>
+              <Button 
+                onClick={handleSubmit} 
+                disabled={loading}
+              >
+                {loading ? "Salvando..." : "Salvar Treino"}
+              </Button>
             </Stack>
           </Box>
         </Box>
