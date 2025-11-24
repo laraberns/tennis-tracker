@@ -1,12 +1,20 @@
 import { useState } from "react";
-import { Box, Paper, Typography, Link, Stack, IconButton, InputAdornment } from "@mui/material";
+import {
+  Box,
+  Paper,
+  Typography,
+  Link,
+  Stack,
+  IconButton,
+  InputAdornment,
+} from "@mui/material";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
-import Layout from "../../../components/Layout"; 
+import Layout from "../../../components/Layout";
 import Button from "../../../components/Button";
 import Input from "../../../components/Input";
-import { showError } from "../../../components/Alert"; 
+import { showError } from "../../../components/Alert";
 import logoImg from "../../../assets/logo.png";
 
 import {
@@ -29,7 +37,7 @@ const SignUp = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  
+
   const { signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -68,7 +76,7 @@ const SignUp = () => {
     setLoading(true);
 
     try {
-      await signUp(formData.email, formData.password);
+      await signUp(formData.email, formData.password, formData.name);
       navigate("/dashboard");
     } catch (error) {
     } finally {
@@ -127,7 +135,9 @@ const SignUp = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label={showPassword ? "Ocultar senha" : "Mostrar senha"}
+                        aria-label={
+                          showPassword ? "Ocultar senha" : "Mostrar senha"
+                        }
                         onClick={handleClickShowPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
@@ -152,13 +162,21 @@ const SignUp = () => {
                   endAdornment: (
                     <InputAdornment position="end">
                       <IconButton
-                        aria-label={showConfirmPassword ? "Ocultar senha" : "Mostrar senha"}
+                        aria-label={
+                          showConfirmPassword
+                            ? "Ocultar senha"
+                            : "Mostrar senha"
+                        }
                         onClick={handleClickShowConfirmPassword}
                         onMouseDown={handleMouseDownPassword}
                         edge="end"
                         disabled={loading}
                       >
-                        {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
+                        {showConfirmPassword ? (
+                          <VisibilityOff />
+                        ) : (
+                          <Visibility />
+                        )}
                       </IconButton>
                     </InputAdornment>
                   ),

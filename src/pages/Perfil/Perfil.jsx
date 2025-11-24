@@ -1,5 +1,15 @@
 import { useState } from "react";
-import { Box, Typography, Stack, Avatar, Divider, Paper, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Stack,
+  Divider,
+  Paper,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Layout from "../../components/Layout";
@@ -13,41 +23,44 @@ import {
   buttonGroup,
   avatarBox,
 } from "./styles";
-import { showSuccess, showError } from "../../components/Alert";
+import { showError } from "../../components/Alert";
 
 const Perfil = () => {
-  const { user, logout, changePassword } = useAuth();
+  const { user, logout, changePassword, updateUserProfile } = useAuth();
   const navigate = useNavigate();
-  
+
   const [perfil, setPerfil] = useState({
-    nome: user?.displayName || user?.email?.split('@')[0] || "Usuário",
+    nome: user?.displayName || user?.email?.split("@")[0] || "Usuário",
     email: user?.email || "",
-    senha: "",
   });
 
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [passwordData, setPasswordData] = useState({
-    currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [changingPassword, setChangingPassword] = useState(false);
+  const [updatingProfile, setUpdatingProfile] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setPerfil((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSave = () => {
-    showSuccess("Perfil atualizado com sucesso!");
-  };
+  const handleSaveProfile = async () => {
+    if (!perfil.nome.trim()) {
+      showError("O nome não pode estar vazio.");
+      return;
+    }
 
-  const handleLogout = async () => {
+    setUpdatingProfile(true);
     try {
-      await logout();
-      navigate("/login");
+      await updateUserProfile(perfil.nome);
+      setEditProfileOpen(false);
     } catch (error) {
-      showError("Erro ao fazer logout. Tente novamente.");
+    } finally {
+      setUpdatingProfile(false);
     }
   };
 
@@ -68,13 +81,21 @@ const Perfil = () => {
       await changePassword(passwordData.newPassword);
       setChangePasswordOpen(false);
       setPasswordData({
-        currentPassword: "",
         newPassword: "",
         confirmPassword: "",
       });
     } catch (error) {
     } finally {
       setChangingPassword(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate("/login");
+    } catch (error) {
+      showError("Erro ao fazer logout. Tente novamente.");
     }
   };
 
@@ -97,17 +118,7 @@ const Perfil = () => {
           <Paper elevation={3} sx={formStyle}>
             <Stack spacing={3} alignItems="center">
               <Box sx={avatarBox}>
-                <Avatar
-                  sx={{
-                    width: 90,
-                    height: 90,
-                    fontSize: "2rem",
-                    bgcolor: "primary.main",
-                    boxShadow: 3,
-                  }}
-                >
-                  {perfil.nome.charAt(0).toUpperCase()}
-                </Avatar>
+
                 <Typography
                   variant="h6"
                   sx={{ fontWeight: 600, marginTop: "0.5rem" }}
@@ -121,24 +132,16 @@ const Perfil = () => {
 
               <Divider sx={{ width: "100%", margin: "1rem 0" }} />
 
-              <Input
-                label="Nome"
-                name="nome"
-                value={perfil.nome}
-                onChange={handleChange}
-              />
+              <Button
+                color="primary"
+                onClick={() => setEditProfileOpen(true)}
+                fullWidth
+              >
+                ✏️ Editar Perfil
+              </Button>
 
-              <Input
-                label="E-mail"
-                name="email"
-                type="email"
-                value={perfil.email}
-                onChange={handleChange}
-                disabled
-              />
-
-              <Button 
-                color="primary" 
+              <Button
+                color="primary"
                 onClick={() => setChangePasswordOpen(true)}
                 fullWidth
               >
@@ -146,9 +149,6 @@ const Perfil = () => {
               </Button>
 
               <Stack direction="row" spacing={2} sx={buttonGroup}>
-                <Button color="primary" onClick={handleSave} fullWidth>
-                  💾 Salvar
-                </Button>
                 <Button color="danger" onClick={handleLogout} fullWidth>
                   🚪 Sair
                 </Button>
@@ -156,7 +156,56 @@ const Perfil = () => {
             </Stack>
           </Paper>
 
-          <Dialog open={changePasswordOpen} onClose={() => setChangePasswordOpen(false)} maxWidth="sm" fullWidth>
+          <Dialog
+            open={editProfileOpen}
+            onClose={() => setEditProfileOpen(false)}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle>Editar Perfil</DialogTitle>
+            <DialogContent>
+              <Stack spacing={2} sx={{ mt: 1 }}>
+                <Input
+                  label="Nome"
+                  name="nome"
+                  value={perfil.nome}
+                  onChange={handleChange}
+                  disabled={updatingProfile}
+                  helperText="Este será o nome exibido no seu perfil"
+                />
+                <Input
+                  label="E-mail"
+                  name="email"
+                  type="email"
+                  value={perfil.email}
+                  disabled
+                  helperText="Para alterar o e-mail, entre em contato com o suporte"
+                />
+              </Stack>
+            </DialogContent>
+            <DialogActions>
+              <Button
+                onClick={() => setEditProfileOpen(false)}
+                disabled={updatingProfile}
+              >
+                Cancelar
+              </Button>
+              <Button
+                onClick={handleSaveProfile}
+                disabled={updatingProfile}
+                color="primary"
+              >
+                {updatingProfile ? "Salvando..." : "Salvar Alterações"}
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          <Dialog
+            open={changePasswordOpen}
+            onClose={() => setChangePasswordOpen(false)}
+            maxWidth="sm"
+            fullWidth
+          >
             <DialogTitle>Alterar Senha</DialogTitle>
             <DialogContent>
               <Stack spacing={2} sx={{ mt: 1 }}>
@@ -164,7 +213,12 @@ const Perfil = () => {
                   label="Nova Senha"
                   type="password"
                   value={passwordData.newPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      newPassword: e.target.value,
+                    }))
+                  }
                   disabled={changingPassword}
                   helperText="Mínimo 6 caracteres"
                 />
@@ -172,17 +226,25 @@ const Perfil = () => {
                   label="Confirmar Nova Senha"
                   type="password"
                   value={passwordData.confirmPassword}
-                  onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  onChange={(e) =>
+                    setPasswordData((prev) => ({
+                      ...prev,
+                      confirmPassword: e.target.value,
+                    }))
+                  }
                   disabled={changingPassword}
                 />
               </Stack>
             </DialogContent>
             <DialogActions>
-              <Button onClick={() => setChangePasswordOpen(false)} disabled={changingPassword}>
+              <Button
+                onClick={() => setChangePasswordOpen(false)}
+                disabled={changingPassword}
+              >
                 Cancelar
               </Button>
-              <Button 
-                onClick={handleChangePassword} 
+              <Button
+                onClick={handleChangePassword}
                 disabled={changingPassword}
                 color="primary"
               >

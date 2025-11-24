@@ -5,7 +5,8 @@ import {
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
-  updatePassword
+  updatePassword,
+  updateProfile
 } from 'firebase/auth';
 import { auth } from '../firebase/config';
 import { showSuccess, showError } from '../components/Alert';
@@ -33,9 +34,16 @@ export const AuthProvider = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const signUp = async (email, password) => {
+  const signUp = async (email, password, displayName) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      
+      if (displayName) {
+        await updateProfile(userCredential.user, {
+          displayName: displayName
+        });
+      }
+
       showSuccess('Conta criada com sucesso!');
       return userCredential;
     } catch (error) {
@@ -159,6 +167,28 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const updateUserProfile = async (displayName) => {
+    try {
+      if (!user) {
+        throw new Error('Usuário não autenticado.');
+      }
+      
+      await updateProfile(user, {
+        displayName: displayName
+      });
+      
+      setUser({
+        ...user,
+        displayName: displayName
+      });
+      
+      showSuccess('Perfil atualizado com sucesso!');
+    } catch (error) {
+      showError('Erro ao atualizar perfil.');
+      throw error;
+    }
+  };
+
   const value = {
     user,
     signUp,
@@ -166,6 +196,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     resetPassword,
     changePassword,
+    updateUserProfile,
     loading
   };
 

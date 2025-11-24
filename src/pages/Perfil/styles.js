@@ -5,6 +5,7 @@ export const containerStyle = {
   alignItems: "center",
   gap: "1.5rem",
   padding: "2rem",
+  position: "relative",
 };
 
 export const title = {
@@ -32,4 +33,17 @@ export const avatarBox = {
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
+};
+
+export const avatarEditButton = {
+  position: 'absolute',
+  bottom: 0,
+  right: 0,
+  backgroundColor: 'primary.main',
+  color: 'white',
+  '&:hover': {
+    backgroundColor: 'primary.dark',
+  },
+  width: 40,
+  height: 40,
 };
