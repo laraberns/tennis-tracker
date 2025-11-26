@@ -29,7 +29,7 @@ export const videoCardStyle = {
 export const videoFrameStyle = {
   position: "relative",
   height: 180,
-  width: "100%",
+  width: "90%",
   aspectRatio: "16 / 9",
   borderRadius: "0.5rem",
   overflow: "hidden",
