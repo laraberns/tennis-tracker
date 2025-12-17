@@ -17,8 +17,8 @@ import {
   loadMoreContainer,
 } from "./styles";
 
-const PEXELS_API = import.meta.env.VITE_API_URL;
-const PEXELS_KEY = import.meta.env.VITE_API_KEY;
+const PEXELS_API = "https://api.pexels.com/videos/search";
+const PEXELS_KEY = "3sQwtlNv6zASIPzkyfGx07yIZqplowBicEHKPRUyHCMCt72hqLHKIhlL";
 
 const DicasConteudos = ({ query = "tennis", maxResults = 6 }) => {
   const [videos, setVideos] = useState([]);
