@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "3sQwtlNv6zASIPzkyfGx07yIZqplowBicEHKPRUyHCMCt72hqLHKIhlL",
+  apiKey: "AIzaSyCMSXHPy_mUqI91ZiXzwSzNjzbNJxa-7Zc",
   authDomain: "tennis-tracker-a90ed.firebaseapp.com",
   projectId: "tennis-tracker-a90ed",
   storageBucket: "tennis-tracker-a90ed.firebasestorage.app",
